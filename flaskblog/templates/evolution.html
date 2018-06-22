@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="cover-heading text-center">Portfolio Evolution</h1>
+<div class="pt-3">
+    <table id="balance-table" class="table table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Value (€)</th>
+                <th scope="col">Value (BTC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in portf_evol %}
+                <tr>
+                    <td scope="col">{{ row }}</td>
+                    <td scope="col">{{ portf_evol[row]["Value"] }}</td>
+                    <td scope="col">{{ portf_evol[row]["ValueBTC"] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

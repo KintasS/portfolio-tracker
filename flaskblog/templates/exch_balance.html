@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="cover-heading text-center">Balance by Exchange</h1>
+<div class="pt-3">
+    <table id="balance-table" class="table table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Exchange</th>
+                <th scope="col">Coin</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Value (€)</th>
+                <th scope="col">Value (BTC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in portfolio %}
+                <tr>
+                    <td scope="col">{{ row.exchange }}</td>
+                    <td scope="col">{{ row.coin }}</td>
+                    <td scope="col">{{ row.amount }}</td>
+                    <td scope="col">{{ row.value }}</td>
+                    <td scope="col">{{ row.value_btc }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

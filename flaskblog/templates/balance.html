@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="cover-heading text-center">Current Balance</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      Portfolio Value: {{ tot_value }}
+    </div>
+    <div class="col-sm">
+      Total Cost: {{ tot_cost }}
+    </div>
+    <div class="col-sm">
+      Total P&L: {{ tot_PL }}
+    </div>
+  </div>
+</div>
+<div class="pt-3">
+    <table id="balance-table" class="table table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Coin</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Value (€)</th>
+                <th scope="col">Value (BTC)</th>
+                <th scope="col">% Port.</th>
+                <th scope="col">UnRealized P&L</th>
+                <th scope="col">Realized P&L</th>
+                <th scope="col">Total P&L</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in balance %}
+                <tr>
+                    <td scope="col">{{ row.coin }}</td>
+                    <td scope="col">{{ row.amount }}</td>
+                    <td scope="col">{{ row.value }}</td>
+                    <td scope="col">{{ row.value_btc }}</td>
+                    <td scope="col">{{ row.perc }}</td>
+                    <td scope="col">{{ row.realized_PL }}</td>
+                    <td scope="col">{{ row.unrealized_PL }}</td>
+                    <td scope="col">{{ row.total_PL }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

@@ -1,0 +1,9 @@
+logs/*
+*.csv
+*.json
+*.db
+flaskblog/static/profile_pics/*
+*tmp*
+temp_file.txt
+*test*
+*.jpg
