@@ -7,3 +7,4 @@ flaskblog/static/profile_pics/*
 temp_file.txt
 *test*
 *.jpg
+.gitignore
