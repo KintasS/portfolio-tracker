@@ -2,17 +2,17 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
-from flaskblog import app, db, bcrypt, mail
-from flaskblog.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
+from portfolio_tracker import app, db, bcrypt, mail
+from portfolio_tracker.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                              PostForm, RequestResetForm, ResetPasswordForm)
-from flaskblog.models import User, Post, Portfolio, Price, Operation
+from portfolio_tracker.models import User, Post, Portfolio, Price, Operation
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
-from flaskblog.calculations import (calc_balance, calc_tot_value,
+from portfolio_tracker.calculations import (calc_balance, calc_tot_value,
                                     calc_tot_cost, get_last_price_dt,
                                     calc_portfolio_evol)
-from flaskblog.config import Params
-from flaskblog.utils import set_logger
+from portfolio_tracker.config import Params
+from portfolio_tracker.utils import set_logger
 
 # Start logging
 logger = set_logger('logs/Main.log', 'main')

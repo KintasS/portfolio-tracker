@@ -2,10 +2,10 @@ import datetime
 import json
 from urllib.request import urlopen
 import sys
-from flaskblog import db
-from flaskblog.utils import error_notificator
-from flaskblog.models import Operation, Price
-from flaskblog.config import Params
+from portfolio_tracker import db
+from portfolio_tracker.utils import error_notificator
+from portfolio_tracker.models import Operation, Price
+from portfolio_tracker.config import Params
 
 
 def import_operations(user, file, logger):

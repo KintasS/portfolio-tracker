@@ -1,10 +1,10 @@
 import datetime
 import json
 from copy import deepcopy
-from flaskblog import db
-from flaskblog.models import (Operation, TradePL, Price, Portfolio,
+from portfolio_tracker import db
+from portfolio_tracker.models import (Operation, TradePL, Price, Portfolio,
                               Balance)
-from flaskblog.config import Params
+from portfolio_tracker.config import Params
 
 
 def fx_exchange(coin, currency, amount, date, logger):
