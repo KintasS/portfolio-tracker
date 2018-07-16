@@ -1,0 +1,55 @@
+td.table-left-border {
+    border-left: 1px solid #c5cae9;
+}
+
+.btn-group-lg .btn, .btn-group-sm .btn {
+    border-radius: 25px;
+}
+
+.hidden-col, .hidden-row {
+    display: none !important;
+}
+
+.btn-group .btn-normal {
+    background: #9fa8da;
+}
+
+.btn-group .btn-active {
+    background: #1a237e;
+}
+
+.carousel-indicators--round li {
+    border-radius: 12px;
+    margin: 0 3px;
+    height: 12px;
+    max-width: 12px;
+    border: 1px solid #5c6bc0;
+    background-color: transparent;
+}
+
+.carousel-indicators .active {
+    background-color: #5c6bc0;
+    max-width: 12px;
+    margin: 0 3px;
+    height: 12px;
+}
+
+#coins-table-xs_wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+#coins-table-sm_wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+#coins-table-md_wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+#coins-table-lg_wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}

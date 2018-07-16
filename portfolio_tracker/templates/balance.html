@@ -1,47 +1,130 @@
 {% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
+<!-- Styles&script for datepicker -->
+<script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.6/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://cdn.jsdelivr.net/npm/gijgo@1.9.6/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+<!-- Your custom styles (optional) -->
+<!-- <link href="{{ url_for('static', filename='css/balance.css') }}" rel="stylesheet"> -->
+
+{% endblock styles %}
+
 {% block content %}
-<h1 class="cover-heading text-center">Current Balance</h1>
-<div class="container">
-  <div class="row">
-    <div class="col-sm">
-      Portfolio Value: {{ tot_value }}
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-2">
+        <div class="container px-2 py-0">
+
+            <!-- Last update -->
+            <div class="row d-flex justify-content-end">
+                <div class="col-xs-12 px-2">
+                    <div class="timestamp font-weight-light">Última actualización: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            </div>
+
+            <!-- Datepicker -->
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-12 mt-2">
+                    <h5 class="text-center font-weight-bold">{{ date.strftime('%Y-%m-%d') }}</h5>
+                </div>
+                <div class="col-12 mt-2 mb-2">
+                    <div class="d-flex flex-row justify-content-center align-items-center">
+                        <h6 class="font-weight-bold mt-3">Fecha: </h6>
+                        <input id="datepicker" class="d-inline ml-3" width="150" />
+                        <a id="submit-btn" class="btn btn-primary btn-sm ml-4 text-center px-4" href="{{ url_for('balance', date='Today') }}" role="bSutton">Ir</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6 px-1 px-sm-2">
+
+                    <!-- Position by Coin -->
+                    <h5 class="font-weight-bold mt-3">Posición por Moneda</h5>
+                    <div class="card">
+                        <div class="card-body p-1">
+                            <table id="exchange-table" class="table table-sm table-hover table-borderless mb-2" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-5">
+                                    <tr>
+                                        <th class="font-weight-bold py-1 pl-2" scope="col"></th>
+                                        <th class="font-weight-bold py-1 text-right" scope="col">Cantidad</th>
+                                        <th class="font-weight-bold py-1 text-right" scope="col">Valor</th>
+                                        <th class="font-weight-bold py-1 pr-2 text-right d-none d-sm-block" scope="col">Valor (฿)</th>
+                                        <th class="font-weight-bold py-1 pr-1 text-right" scope="col">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coin in coin_summary %}
+                                    <tr>
+                                        <td class="py-1 pl-2 font-weight-bold" scope="col">{{ coin }}</td>
+                                        <td class="py-1 text-right" scope="col">{{ coin_summary[coin]['amount'] }}</td>
+                                        <td class="py-1 text-right" scope="col">{{ coin_summary[coin]['value'] }}</td>
+                                        <td class="py-1 pr-2 text-right d-none d-sm-block" scope="col">{{ coin_summary[coin]['value_btc'] }}</td>
+                                        <td class="py-1 pr-1 text-right" scope="col">{{ coin_summary[coin]['perc'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                        <td class="py-1 font-weight-bold text-right" style="border-top: 1px solid indigo" scope="col">{{ total_value }}</td>
+                                        <td class="py-1 pr-2 font-weight-bold text-right d-none d-sm-block" style="border-top: 1px solid indigo" scope="col">{{ total_value_btc }}</td>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <!-- Position by Exchange -->
+                    <h5 class="font-weight-bold mt-4">Posición por Exchange</h5>
+                    <div class="card mt-2">
+                        <div class="card-body p-1">
+                            <table id="exchange-table" class="table table-sm table-hover table-borderless mb-2" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-5">
+                                    <tr>
+                                        <th class="font-weight-bold py-1 pl-2" scope="col"></th>
+                                        <th class="font-weight-bold py-1 text-right" scope="col">Valor</th>
+                                        <th class="font-weight-bold py-1 pr-2 text-right d-none d-sm-block" scope="col">Valor (฿)</th>
+                                        <th class="font-weight-bold py-1 pr-2 text-right" scope="col">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for exch in exch_summary %}
+                                    <tr>
+                                        <td class="py-1 pl-2 font-weight-bold" scope="col">{{ exch }}</td>
+                                        <td class="py-1 text-right" scope="col">{{ exch_summary[exch]['value'] }}</td>
+                                        <td class="py-1 pr-2 text-right d-none d-sm-block" scope="col">{{ exch_summary[exch]['value_btc'] }}</td>
+                                        <td class="py-1 pr-2 text-right" scope="col">{{ exch_summary[exch]['perc'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                        <td class="py-1 font-weight-bold text-right" style="border-top: 1px solid indigo" scope="col">{{ total_value }}</td>
+                                        <td class="py-1 pr-2 font-weight-bold text-right d-none d-sm-block" style="border-top: 1px solid indigo" scope="col">{{ total_value_btc }}</td>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
-    <div class="col-sm">
-      Total Cost: {{ tot_cost }}
-    </div>
-    <div class="col-sm">
-      Total P&L: {{ tot_PL }}
-    </div>
-  </div>
 </div>
-<div class="pt-3">
-    <table id="balance-table" class="table table-sm table-hover">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">Coin</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Value (€)</th>
-                <th scope="col">Value (BTC)</th>
-                <th scope="col">% Port.</th>
-                <th scope="col">UnRealized P&L</th>
-                <th scope="col">Realized P&L</th>
-                <th scope="col">Total P&L</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in balance %}
-                <tr>
-                    <td scope="col">{{ row.coin }}</td>
-                    <td scope="col">{{ row.amount }}</td>
-                    <td scope="col">{{ row.value }}</td>
-                    <td scope="col">{{ row.value_btc }}</td>
-                    <td scope="col">{{ row.perc }}</td>
-                    <td scope="col">{{ row.realized_PL }}</td>
-                    <td scope="col">{{ row.unrealized_PL }}</td>
-                    <td scope="col">{{ row.total_PL }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
 {% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<!-- My scripts -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/balance_hist.js') }}"></script>
+
+{% endblock scripts %}

@@ -1,0 +1,52 @@
+body {
+    background: #e8eaf6;
+    /* color: #333333; */
+    margin-top: 4rem;
+}
+
+.site-header .navbar-nav .nav-link {
+    color: #dadfe2;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+    color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link.active {
+    font-weight: 500;
+}
+
+.main-card {
+    border-radius: 3px;
+}
+
+.dropdown-item {
+    color: red;
+}
+
+.dropdown-menu {
+    background-color: #e8eaf6;
+}
+
+.content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+.timestamp {
+    /* font-style: italic; */
+    font-size: 0.75rem;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: .25rem;
+}
+
+.form-group .text-bigger {
+    font-size: 1.2rem;
+    font-weight: normal !important
+}

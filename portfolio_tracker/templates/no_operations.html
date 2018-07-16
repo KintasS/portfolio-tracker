@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
+<!-- Your custom styles (optional) -->
+<link href="{{ url_for('static', filename='css/balance.css') }}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+<!-- Start your project here-->
+<div style="height: 76vh">
+    <div class="flex-center flex-column">
+        <h1 class="text-center animated fadeIn mb-5">Bienvenido a Portfolio Tracker</h1>
+
+        <h5 class="text-center animated fadeIn mb-5">Para empezar a gestionar su cartera, comience por dar de alta sus operaciones en el apartado de operaciones.</h5>
+
+        <h4 class="text-center animated fadeIn mb-4">¿Empezamos?</h4>
+
+        <div class="row justify-content-center align-items-center">
+            <a href="{{ url_for('operations') }}" type="button" class="btn btn-indigo px-4 mr-auto"><i class="fa fa-upload mr-3" aria-hidden="true"></i>Ir a Operaciones</a>
+        </div>
+
+    </div>
+</div>
+<!-- /Start your project here -->
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/balance.js') }}"></script>
+
+{% endblock scripts %}

@@ -1,0 +1,29 @@
+.dataTables_length label {
+    margin-right: 1rem;
+    /* padding-top: 1rem; */
+}
+
+.dataTables_filter.md-form {
+    margin-top: .55rem;
+}
+
+.dataTables_filter.md-form input {
+    font-weight: 300;
+}
+
+.dataTables_wrapper .row {
+    margin-bottom: 0;
+}
+
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0;
+    padding-bottom: 1rem;
+}
+
+.dataTables_paginate {
+    float: right;
+}
+
+.dataTables_filter {
+    float: right;
+}

@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
+<!-- Your custom styles (optional) -->
+<link href="{{ url_for('static', filename='css/balance.css') }}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-2">
+        <div class="container px-2 py-0">
+
+            <!-- Last update -->
+            <div class="row d-flex justify-content-end">
+                <div class="col-xs-12 px-2">
+                    <div class="timestamp font-weight-light">Última actualización: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                <!-- <div class="col-md-11 col-lg-10 col-xl-9"> -->
+                <div class="col-sm-12 col-md-11 col-lg-11 col-xl-10 p-1">
+
+                    <!-- Balance Summary -->
+                    <div class="row d-flex justify-content-between no-gutters">
+                        <div class="col-4 pr-2">
+                            <div class="row d-flex justify-content-start">
+                                <div class="col-12 col-md-11">
+                                    <div class="card text-center">
+                                        <p class="card-header indigo lighten-1 white-text p-1">Portfolio</p>
+                                        <div class="card-body px-0 py-2">
+                                            <span class="font-weight-bold">{{ tot_value }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-12 col-md-11">
+                                    <div class="card text-center">
+                                        <p class="card-header indigo lighten-1 white-text p-1">Coste</p>
+                                        <div class="card-body px-0 py-2">
+                                            <span class="font-weight-bold">{{ tot_cost }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 pl-2">
+                            <div class="row d-flex justify-content-end">
+                                <div class="col-12 col-md-11">
+                                    <div class="card text-center">
+                                        <p class="card-header indigo lighten-1 white-text p-1">P&G</p>
+                                        <div class="card-body px-0 py-2">
+                                            <span class="font-weight-bold">{{ tot_PL }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Balance table -->
+                    <div class="card mt-2">
+                        <div class="card-body p-0">
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-12 col-lg-12">
+                                    <table id="balance-table" class="table table-sm table-hover table-borderless px-1" cellspacing="0" width="100%">
+                                        <thead class="indigo lighten-1">
+                                            <tr class="text-white">
+                                                <th scope="col"></th>
+                                                <th class="text-right d-none d-md-block" scope="col">Cantidad </th>
+                                                <th class="text-right" scope="col">Valor</th>
+                                                <th class="text-right d-none" scope="col">Valor (BTC) </th>
+                                                <th class="text-right d-none d-sm-block" scope="col"><abbr title="Weight of this position in overall portfolio">%</abbr></th>
+                                                <th class="text-right" scope="col">UnR. P&L </th>
+                                                <th class="text-right d-none d-lg-block" scope="col">UnR. %</th>
+                                                <th class="text-right" scope="col">Real. P&L </th>
+                                                <th class="text-right d-none d-sm-block" scope="col">Total P&L </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in balances %}
+                                            <tr>
+                                                <td class="font-weight-bold py-1" scope="col">{{ row.coin }}</td>
+                                                <td class="text-right d-none d-md-block py-1" scope="col">{{ row.amount_str() }}</td>
+                                                <td class="text-right py-1" scope="col">{{ row.value_str(curr) }}</td>
+                                                <td class="text-right d-none py-1" scope="col">{{ row.value_btc }}</td>
+                                                <td class="text-right d-none d-sm-block py-1" scope="col">{{ row.perc_str() }}</td>
+                                                <td class="text-right py-1 color-sign" scope="col">{{ row.unrealized_PL_str(curr) }}</td>
+                                                <td class="text-right d-none d-lg-block py-1 color-sign" scope="col">{{ row.unrealized_perc_str() }}</td>
+                                                <td class="text-right py-1 color-sign" scope="col">{{ row.realized_PL_str(curr) }}</td>
+                                                <td class="text-right d-none d-sm-block py-1 color-sign" scope="col">{{ row.total_PL_str(curr) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/balance.js') }}"></script>
+
+{% endblock scripts %}

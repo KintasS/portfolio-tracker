@@ -1,75 +1,188 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <!-- <meta name="viewport" content="width=1200px, initial-scale=0.3"> -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ url_for('static', filename='img/Bitcoin_logo.png') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{{ url_for('static', filename='css/mdb.min.css') }}" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="{{ url_for('static', filename='css/layout.css') }}" rel="stylesheet">
+    <!-- Page specific styles -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    {% block styles %}
+    {% endblock %}
 
     {% if title %}
-        <title>Flask Blog - {{ title }}</title>
+        <title>Portfolio Tracker - {{ title }}</title>
     {% else %}
-        <title>Flask Blog</title>
+        <title>Portfolio Tracker</title>
     {% endif %}
 </head>
+
+
+
 <body>
+
+
+    <!--Main Navigation-->
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-dark indigo darken-4 fixed-top">
             <div class="container">
-                <a class="navbar-brand mr-4" href="/">Portfolio Tracker</a>
+                <a class="navbar-brand mr-4" href="/">Portfolio Tracker<span class="badge badge-light ml-2">Beta</span></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
                         {% if current_user.is_authenticated %}
-                            <a class="nav-item nav-link" href="{{ url_for('balance') }}">Current Balance</a>
-                            <a class="nav-item nav-link" href="{{ url_for('exch_balance') }}">Balance by Exchange</a>
-                            <a class="nav-item nav-link" href="{{ url_for('evolution') }}">Portfolio Evolution</a>
-                            <a class="nav-item nav-link" href="{{ url_for('trade_history') }}">Trade History</a>
+                            <a class="nav-item nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                            <!-- Dropdown de Balance-->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Balance</a>
+                                <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item py-1" href="{{ url_for('balance', date='Today') }}">Por Fecha</a>
+                                    <a class="dropdown-item py-1" href="{{ url_for('balance_exch') }}">Por Exchange</a>
+                                </div>
+                            </li>
+                            <!-- Dropdown de Resultados-->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Resultados</a>
+                                <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item py-1" href="{{ url_for('pnl_total') }}">P&L Total</a>
+                                    <a class="dropdown-item py-1" href="{{ url_for('pnl_history') }}">P&L Histórico</a>
+                                    <a class="dropdown-item py-1" href="{{ url_for('pnl_trades') }}">P&L Operaciones</a>
+                                </div>
+                            </li>
+                            <a class="nav-item nav-link" href="{{ url_for('operations') }}">Operaciones</a>
                         {% endif %}
                     </div>
                     <!-- Navbar Right Side -->
                     <div class="navbar-nav">
                         {% if current_user.is_authenticated %}
-                            <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-                            <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                            <a class="nav-item nav-link" href="{{ url_for('account') }}">Cuenta</a>
+                            <a class="nav-item nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
                         {% else %}
-                            <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-                            <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+                            <a class="nav-item nav-link" href="{{ url_for('login') }}">Inicio</a>
+                            <a class="nav-item nav-link" href="{{ url_for('register') }}">Registro</a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </nav>
     </header>
-    <main role="main" class="container">
-      <div class="row">
-        <div class="col-md-12">
-          {% with messages = get_flashed_messages(with_categories=true) %}
+
+
+    <!--Main layout-->
+    <main role="main" class="container p-2">
+
+        <!--Section: Message display-->
+        <section id="message-display">
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                    {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
-          {% endwith %}
-          {% block content %}
-          {% endblock %}
-        </div>
-      </div>
+        {% endwith %}
+        </section>
+        <!--Section: Best Features-->
+
+        <!--Section: Main page content-->
+        <section id="main-content">
+            {% block content %}
+            {% endblock %}
+        </section>
+        <!--Section: Best Features-->
+
     </main>
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Footer -->
+    <footer class="page-footer font-small indigo darken-4 mt-4">
+
+        <!-- Footer Elements -->
+        <div class="container">
+
+          <!-- Grid row-->
+          <div class="row">
+
+            <!-- Grid column -->
+            <div class="col-md-12 py-2">
+              <div class="mb-5 flex-center">
+
+                <!-- Facebook -->
+                <a class="fb-ic">
+                  <i class="fa fa-facebook fa-lg white-text mr-md-5 mr-3 fa-2x"> </i>
+                </a>
+                <!-- Twitter -->
+                <a class="tw-ic">
+                  <i class="fa fa-twitter fa-lg white-text mr-md-5 mr-3 fa-2x"> </i>
+                </a>
+                <!--Linkedin -->
+                <a class="li-ic">
+                  <i class="fa fa-linkedin fa-lg white-text mr-md-5 mr-3 fa-2x"> </i>
+                </a>
+                <!--Instagram-->
+                <a class="ins-ic">
+                  <i class="fa fa-instagram fa-lg white-text mr-md-5 mr-3 fa-2x"> </i>
+                </a>
+                <!--Pinterest-->
+                <a class="pin-ic">
+                  <i class="fa fa-pinterest fa-lg white-text fa-2x"> </i>
+                </a>
+              </div>
+            </div>
+            <!-- Grid column -->
+
+          </div>
+          <!-- Grid row-->
+
+        </div>
+        <!-- Footer Elements -->
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2018 Copyright:
+          <a href="#"> PortfolioTracker.com</a>
+        </div>
+        <!-- Copyright -->
+
+      </footer>
+      <!-- Footer -->
+
+
+    <!-- Footer -->
+    <!-- <footer class="page-footer font-small indigo darken-4 mt-4">
+      <div class="footer-copyright text-center py-3">© 2018 Copyright:
+        <a href="#"> PortfolioTracker.com</a>
+      </div>
+    </footer> -->
+    <!-- Footer -->
+
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+    <!-- Page specific styles -->
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script> -->
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
+    <!-- Page specific scripts -->
+    {% block scripts %}
+    {% endblock %}
+
 </body>
 </html>

@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="content-section">
-      <div class="media">
+      <div class="media mt-2 mb-4">
         <img class="rounded-circle account-img" src="{{ image_file }}">
-        <div class="media-body">
+        <div class="media-body pl-3">
           <h2 class="account-heading">{{ current_user.username }}</h2>
           <p class="text-secondary">{{ current_user.email }}</p>
         </div>
@@ -11,9 +11,9 @@
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Account Info</legend>
+                <legend class="font-weight-bold border-bottom mb-4">Actualizar la cuenta</legend>
                 <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
+                    {{ form.username.label(class="form-control-label text-bigger") }}
 
                     {% if form.username.errors %}
                         {{ form.username(class="form-control form-control-lg is-invalid") }}
@@ -27,7 +27,7 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
+                    {{ form.email.label(class="form-control-label text-bigger") }}
                     {% if form.email.errors %}
                         {{ form.email(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -40,7 +40,21 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.picture.label() }}
+                    {{ form.currency.label(class="form-control-label text-bigger") }}
+
+                    {% if form.currency.errors %}
+                        {{ form.currency(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.currency.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.currency(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.picture.label(class="text-bigger") }}
                     {{ form.picture(class="form-control-file") }}
                     {% if form.picture.errors %}
                         {% for error in form.picture.errors %}
@@ -50,7 +64,7 @@
                 </div>
             </fieldset>
             <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
+                {{ form.submit(class="btn btn-indigo") }}
             </div>
         </form>
     </div>

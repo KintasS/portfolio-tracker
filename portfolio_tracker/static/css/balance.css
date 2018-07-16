@@ -1,0 +1,17 @@
+.dataTables_length label {
+    margin-right: 1rem;
+    padding-top: 1rem;
+}
+
+.dataTables_filter.md-form {
+    margin-top: .55rem;
+}
+
+.dataTables_filter.md-form input {
+    font-weight: 300;
+}
+
+#balance-table_wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}

@@ -12,8 +12,19 @@ class AppConfig:
 
 
 class Params:
-    USER = 'SergioQV'
-    CALC_CURRENCY = 'EUR'
     NON_CRYPTOS = ['EUR', 'USD', None]
-    HISTORY_INIT = '2017-01-01'
+    HISTORY_INIT = '2016-01-01'
     CURRENCIES = ['EUR', 'USD']
+    # CURRENCY_SYMBOLS = {'EUR': '€',
+    #                     'USD': '$',
+    #                     'BTC': 'B'}
+    DECIMAL_POS = {'EUR': 2,
+                   'USD': 2,
+                   'BTC': 8}
+    OPERATION_TYPES = ['Airdrop', 'Deposit', 'Expense', 'Fork',
+                       'Income', 'Trade', 'Withdrawal']
+    IMPORT_HEADER = ("Date;Exchange;Type;Buy Amount;Buy Coin;Sell Amount;"
+                     "Sell Coin;Fee Amount;Fee Coin;Comment")
+    CURRENCY_SYMBOLS = {'EUR': '€',
+                        'USD': '$',
+                        'BTC': '฿'}

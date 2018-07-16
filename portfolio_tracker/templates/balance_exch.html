@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+{% endblock styles %}
+
+{% block content %}
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-2">
+        <div class="container px-2 py-0">
+
+            <!-- Last update -->
+            <div class="row d-flex justify-content-end">
+                <div class="col-xs-12 px-2">
+                    <div class="timestamp font-weight-light">Última actualización: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            </div>
+
+            <!-- Total Exchange Balance Summary -->
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 col-sm-10 col-md-8 col-lg-7 px-1 px-sm-2">
+                    <h5 class="font-weight-bold mt-2 mb-1 ml-1">Resumen</h5>
+                    <div class="card mt-1 mt-sm-2">
+                        <div class="card-body p-1">
+                            <table id="balance-table" class="table table-sm table-hover table-borderless mb-2" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-5">
+                                    <tr>
+                                        <th class="font-weight-bold py-1 pl-2" scope="col">Exchange</th>
+                                        <th class="font-weight-bold py-1 text-right" scope="col">Valor</th>
+                                        <th class="font-weight-bold py-1 pr-2 text-right" scope="col">Valor (฿)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for exch in exch_summary %}
+                                    <tr>
+                                        <td class="py-1 pl-2 font-weight-bold" scope="col">{{ exch }}</td>
+                                        <td class="py-1 text-right" scope="col">{{ exch_summary[exch]['value'] }}</td>
+                                        <td class="py-1 pr-2 text-right" scope="col">{{ exch_summary[exch]['value_btc'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="py-1 font-weight-bold" style="border-top: 1px solid indigo" scope="col"></td>
+                                        <td class="py-1 font-weight-bold text-right" style="border-top: 1px solid indigo" scope="col">{{ total_value }}</td>
+                                        <td class="py-1 pr-2 font-weight-bold text-right" style="border-top: 1px solid indigo" scope="col">{{ total_value_btc }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Balance table -->
+                    <h5 class="font-weight-bold mt-4 mb-2 ml-1">Detalle por Exchange</h5>
+                    {% for exch in split_portf %}
+                        <div class="card mb-3">
+                            <h6 class="card-header indigo lighten-1 white-text p-2 pl-3">{{ exch }}</h6>
+                            <div class="card-body px-2 pt-2 pb-0">
+                                <table id="balance-table" class="table table-sm table-hover table-borderless mb-0" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-5">
+                                        <tr>
+                                            <th class="font-weight-bold py-1 pl-2" scope="col">Moneda</th>
+                                            <th class="font-weight-bold py-1 text-right" scope="col">Cantidad</th>
+                                            <th class="font-weight-bold py-1 text-right" scope="col">Valor</th>
+                                            <th class="font-weight-bold py-1 pr-2 text-right d-none d-sm-block" scope="col">Valor (฿)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pos in split_portf[exch] %}
+                                            <tr>
+                                                <td class="py-1 pl-2 font-weight-bold" scope="col">{{ pos.coin }}</td>
+                                                <td class="py-1 text-right" scope="col">{{ pos.amount_str() }}</td>
+                                                <td class="py-1 text-right" scope="col">{{ pos.value_str(curr, 0) }}</td>
+                                                <td class="py-1 pr-2 text-right d-none d-sm-block" scope="col">{{ pos.value_btc_str('BTC', 4) }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

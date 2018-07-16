@@ -1,0 +1,247 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
+<!-- Your custom styles (optional) -->
+<link href="{{ url_for('static', filename='css/pnl_history.css') }}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+
+<!-- Balance table -->
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-2">
+        <div class="container px-2 py-0">
+
+
+            <!-- Last update -->
+            <div class="row d-flex justify-content-end">
+                <div class="col-xs-12 px-2 mb-1">
+                    <div class="timestamp font-weight-light">Última actualización: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            </div>
+
+
+            <div class="row d-flex justify-content-center">
+                <div class="col-sm-12 col-lg-9 px-1 px-sm-2">
+                    <div class="card">
+                        <div class="card-body p-1">
+
+                            <!--Selection buttons -->
+                            <div class="row d-flex justify-content-end">
+                                <div class="col-sm-12 d-flex justify-content-end">
+                                    <div class="btn-group btn-group-sm mx-1 my-1" role="group" aria-label="Basic example">
+                                        <a id="btn-curr" class="btn btn-active btn-sm" href="#" role="button">EUR</a>
+                                        <a id="btn-btc" class="btn btn-normal btn-sm" href="#" role="button">BTC</a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 d-flex justify-content-end">
+                                    <div id="period-btns" class="btn-group btn-group-sm mx-1 my-1" role="group" aria-label="Basic example">
+                                        <a class="btn btn-active lighten-1 btn-sm " href="#" data-period="1" role="button">Diario</a>
+                                        <a class="btn btn-normal lighten-1 btn-sm" href="#" data-period="7" role="button">Semanal</a>
+                                        <a class="btn btn-normal lighten-1 btn-sm" href="#" data-period="30" role="button">Mensual</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Data table for XS (EXTRA-SMALL)-->
+                            <div class="js-table d-sm-none">
+                                <table id="evol-table-xs" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-date" class="py-2" scope="col">Fecha</th>
+                                            <th id="row-portf" class="text-right py-2" data-curr="curr" scope="col">Portfolio</th>
+                                            <!-- <th id="row-portf-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif.</th> -->
+                                            <th id="row-portf-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <!-- <th id="row-pnl" class="text-right py-2" data-curr="curr" scope="col">P&L </th>
+                                            <th id="row-pnl-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif. </th>
+                                            <th id="row-pnl-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th> -->
+
+                                            <th id="row-portfBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Portfolio</th>
+                                            <!-- <th id="row-portfBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif.</th> -->
+                                            <th id="row-portfBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <!-- <th id="row-pnlBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">P&L </th>
+                                            <th id="row-pnlBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif. </th>
+                                            <th id="row-pnlBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in portf_evol %}
+                                        <tr>
+                                            <td headers="row-date" class="font-weight-bold py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-portf" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf"] }}</td>
+                                            <!-- <td headers="row-portf-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-Dif"] }}</td> -->
+                                            <td headers="row-portf-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-DifPerc"] }}</td>
+                                            <!-- <td headers="row-pnl" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl"] }}</td>
+                                            <td headers="row-pnl-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-Dif"] }}</td>
+                                            <td headers="row-pnl-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-DifPerc"] }}</td> -->
+
+                                            <td headers="row-portfBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC"] }}</td>
+                                            <!-- <td headers="row-portfBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-Dif"] }}</td> -->
+                                            <td headers="row-portfBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-DifPerc"] }}</td>
+                                            <!-- <td headers="row-pnlBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC"] }}</td>
+                                            <td headers="row-pnlBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-Dif"] }}</td>
+                                            <td headers="row-pnlBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-DifPerc"] }}</td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for SM (SMALL)-->
+                            <div class="js-table d-none d-sm-block d-md-none">
+                                <table id="evol-table-sm" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-date" class="py-2" scope="col">Fecha</th>
+                                            <th id="row-portf" class="text-right py-2" data-curr="curr" scope="col">Portfolio</th>
+                                            <th id="row-portf-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif.</th>
+                                            <th id="row-portf-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <!-- <th id="row-pnl" class="text-right py-2" data-curr="curr" scope="col">P&L </th>
+                                            <th id="row-pnl-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif. </th>
+                                            <th id="row-pnl-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th> -->
+
+                                            <th id="row-portfBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Portfolio</th>
+                                            <th id="row-portfBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif.</th>
+                                            <th id="row-portfBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <!-- <th id="row-pnlBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">P&L </th>
+                                            <th id="row-pnlBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif. </th>
+                                            <th id="row-pnlBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in portf_evol %}
+                                        <tr>
+                                            <td headers="row-date" class="font-weight-bold py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-portf" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf"] }}</td>
+                                            <td headers="row-portf-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-Dif"] }}</td>
+                                            <td headers="row-portf-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-DifPerc"] }}</td>
+                                            <!-- <td headers="row-pnl" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl"] }}</td>
+                                            <td headers="row-pnl-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-Dif"] }}</td>
+                                            <td headers="row-pnl-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-DifPerc"] }}</td> -->
+
+                                            <td headers="row-portfBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC"] }}</td>
+                                            <td headers="row-portfBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-Dif"] }}</td>
+                                            <td headers="row-portfBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-DifPerc"] }}</td>
+                                            <!-- <td headers="row-pnlBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC"] }}</td>
+                                            <td headers="row-pnlBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-Dif"] }}</td>
+                                            <td headers="row-pnlBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-DifPerc"] }}</td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for MD (MEDIUM) & LG (LONG)-->
+                            <div class="js-table d-none d-md-block d-xl-none">
+                                <table id="evol-table-md" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-date" class="py-2" scope="col">Fecha</th>
+                                            <th id="row-portf" class="text-right py-2" data-curr="curr" scope="col">Portfolio</th>
+                                            <th id="row-portf-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif.</th>
+                                            <th id="row-portf-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <th id="row-pnl" class="text-right py-2" data-curr="curr" scope="col">P&L </th>
+                                            <!-- <th id="row-pnl-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif. </th> -->
+                                            <th id="row-pnl-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+
+                                            <th id="row-portfBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Portfolio</th>
+                                            <th id="row-portfBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif.</th>
+                                            <th id="row-portfBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <th id="row-pnlBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">P&L </th>
+                                            <!-- <th id="row-pnlBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif. </th> -->
+                                            <th id="row-pnlBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in portf_evol %}
+                                        <tr>
+                                            <td headers="row-date" class="font-weight-bold py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-portf" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf"] }}</td>
+                                            <td headers="row-portf-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-Dif"] }}</td>
+                                            <td headers="row-portf-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-DifPerc"] }}</td>
+                                            <td headers="row-pnl" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl"] }}</td>
+                                            <!-- <td headers="row-pnl-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-Dif"] }}</td> -->
+                                            <td headers="row-pnl-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-DifPerc"] }}</td>
+
+                                            <td headers="row-portfBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC"] }}</td>
+                                            <td headers="row-portfBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-Dif"] }}</td>
+                                            <td headers="row-portfBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-DifPerc"] }}</td>
+                                            <td headers="row-pnlBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC"] }}</td>
+                                            <!-- <td headers="row-pnlBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-Dif"] }}</td> -->
+                                            <td headers="row-pnlBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-DifPerc"] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for XL (EXTRA-LONG)-->
+                            <div class="js-table d-none d-xl-block">
+                                <table id="evol-table-xl" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-date" class="py-2" scope="col">Fecha</th>
+                                            <th id="row-portf" class="text-right py-2" data-curr="curr" scope="col">Portfolio</th>
+                                            <th id="row-portf-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif.</th>
+                                            <th id="row-portf-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <th id="row-pnl" class="text-right py-2" data-curr="curr" scope="col">P&L </th>
+                                            <th id="row-pnl-Dif" class="text-right py-2" data-curr="curr" scope="col">Dif. </th>
+                                            <th id="row-pnl-DifPerc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+
+                                            <th id="row-portfBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Portfolio</th>
+                                            <th id="row-portfBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif.</th>
+                                            <th id="row-portfBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <th id="row-pnlBTC" class="text-right py-2 hidden-col" data-curr="btc" scope="col">P&L </th>
+                                            <th id="row-pnlBTC-Dif" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Dif. </th>
+                                            <th id="row-pnlBTC-DifPerc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in portf_evol %}
+                                        <tr>
+                                            <td headers="row-date" class="font-weight-bold py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-portf" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf"] }}</td>
+                                            <td headers="row-portf-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-Dif"] }}</td>
+                                            <td headers="row-portf-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["portf-DifPerc"] }}</td>
+                                            <td headers="row-pnl" class="text-right table-left-border py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl"] }}</td>
+                                            <td headers="row-pnl-Dif" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-Dif"] }}</td>
+                                            <td headers="row-pnl-DifPerc" class="text-right color-sign py-1" data-curr="curr" scope="col">{{ portf_evol[row]["pnl-DifPerc"] }}</td>
+
+                                            <td headers="row-portfBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC"] }}</td>
+                                            <td headers="row-portfBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-Dif"] }}</td>
+                                            <td headers="row-portfBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["portfBTC-DifPerc"] }}</td>
+                                            <td headers="row-pnlBTC" class="text-right table-left-border py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC"] }}</td>
+                                            <td headers="row-pnlBTC-Dif" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-Dif"] }}</td>
+                                            <td headers="row-pnlBTC-DifPerc" class="text-right color-sign py-1 hidden-col" data-curr="btc" scope="col">{{ portf_evol[row]["pnlBTC-DifPerc"] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/pnl_history.js') }}"></script>
+
+{% endblock scripts %}

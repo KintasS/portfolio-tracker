@@ -1,0 +1,402 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
+<!-- Your custom styles (optional) -->
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-2">
+        <div class="container px-2 py-0">
+
+            <!-- Last update -->
+            <div class="row d-flex justify-content-end">
+                <div class="col-xs-12 px-2">
+                    <spam class="timestamp text-muted">Última actualización: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </div>
+            </div>
+
+            <!-- Summary carousel -->
+            <div class="row">
+                <div class="col-sm-12 p-1">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators carousel-indicators--round mb-2">
+                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                        </ol>
+                        <div class="carousel-inner">
+                            {% for curr in pf_delta %}
+                                {% if curr == 'BTC' %}
+                                    <div class="carousel-item">
+                                {% else %}
+                                    <div class="carousel-item active">
+                                {% endif %}
+                                <div class="card">
+                                    <div class="card-body px-1 py-0">
+                                        <div class="card">
+                                            <div class="card-body indigo lighten-5 pt-0 pb-3">
+                                                <div class="row d-flex justify-content-around">
+                                                    {% for metric in pf_delta[curr] %}
+                                                    <div class="col-sm-6 col-lg-5 col-xl-4 mt-3">
+                                                        <div class="card">
+                                                            <div class="card-header indigo lighten-1 white-text pb-0">
+                                                                <div class="row d-flex justify-content-around align-items-baseline">
+                                                                    <h6 class="text-left font-weight-bold">{{ metric }}</h6>
+                                                                    <h6 class="text-right font-weight-bold">{{ pf_delta[curr][metric]['Value'] }}</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body py-0">
+                                                              <div class="row d-flex justify-content-center">
+                                                                  <div class="col-9 col-sm-11 col-md-9 col-lg-8 col-xl-8 px-0 mt-2">
+                                                                      <table class="table table-hover table-borderless mb-2" cellspacing="0" width="100%">
+                                                                          <tbody>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 1D:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1D']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1D']['Perc'] }}</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 7D:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['7D']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['7D']['Perc'] }}</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 1M:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1M']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1M']['Perc'] }}</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 3M:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['3M']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['3M']['Perc'] }}</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 6M:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['6M']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['6M']['Perc'] }}</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                  <td class="text-left font-weight-bold py-1 px-1" scope="col">Δ 1Y:</td>
+                                                                                  <td class="text-right py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1Y']['Dif'] }}</td>
+                                                                                  <td class="text-right color-sign py-1 px-1" scope="col">{{ pf_delta[curr][metric]['1Y']['Perc'] }}</td>
+                                                                              </tr>
+                                                                          </tbody>
+                                                                      </table>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Balance table -->
+            <div class="row">
+                <div class="col-sm-12 p-2">
+                    <div class="card">
+                        <div class="card-body px-1 px-sm-2 pb-0 pt-1">
+
+                            <!--Selection buttons -->
+                            <div class="d-flex justify-content-end">
+                                <div class="btn-group btn-group-sm mr-1 mt-1" role="group" aria-label="Basic example">
+                                    <a id="btn-curr" class="btn btn-active btn-sm" href="#" role="button">EUR</a>
+                                    <a id="btn-btc" class="btn btn-normal btn-sm" href="#" role="button">BTC</a>
+                                </div>
+                            </div>
+
+                            <!--Data table for XS (EXTRA-SMALL)-->
+                            <div class="d-sm-none">
+                                <table id="coins-table-xs" class="table table-hover table-borderless px-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-coin" class="py-2" scope="col"></th>
+                                            <!-- <th id="row-value" class="text-right py-2" data-curr="curr" scope="col">Valor</th> -->
+                                            <!-- <th id="row-perc" class="text-right py-2" data-curr="curr" scope="col">%</th> -->
+                                            <th id="row-price" class="text-right py-2" data-curr="curr" scope="col">Cotiz.</th>
+                                            <th id="row-1d" class="text-right py-2" data-curr="curr" scope="col">Δ 1D</th>
+                                            <!-- <th id="row-7d" class="text-right py-2" data-curr="curr" scope="col">Δ 7D</th> -->
+                                            <th id="row-1m" class="text-right py-2" data-curr="curr" scope="col">Δ 1M</th>
+                                            <!-- <th id="row-3m" class="text-right py-2" data-curr="curr" scope="col">Δ 3M</th>
+                                            <th id="row-6m" class="text-right py-2" data-curr="curr" scope="col">Δ 6M</th>
+                                            <th id="row-1y" class="text-right py-2" data-curr="curr" scope="col">Δ 1Y</th>
+                                            <th id="row-2y" class="text-right py-2" data-curr="curr" scope="col">Δ 2Y</th> -->
+
+                                            <!-- <th id="row-value-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Valor</th> -->
+                                            <!-- <th id="row-perc-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th> -->
+                                            <th id="row-price-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Cotiz.</th>
+                                            <th id="row-1d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1D</th>
+                                            <!-- <th id="row-7d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 7D</th> -->
+                                            <th id="row-1m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1M</th>
+                                            <!-- <th id="row-3m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 3M</th>
+                                            <th id="row-6m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 6M</th>
+                                            <th id="row-1y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1Y</th>
+                                            <th id="row-2y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 2Y</th> -->
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in coin_dashbord %}
+                                        <tr>
+                                            <td headers="row-coin" class="font-weight-bold pl-1 pr-0 py-1" scope="col">{{ row }}</td>
+                                            <!-- <td headers="row-value" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Value"] }}</td> -->
+                                            <!-- <td headers="row-perc" class="text-right pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Perc"] }}</td> -->
+                                            <td headers="row-price" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Price"] }}</td>
+                                            <td headers="row-1d" class="text-right table-left-border color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1d"] }}</td>
+                                            <!-- <td headers="row-7d" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_7d"] }}</td> -->
+                                            <td headers="row-1m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1m"] }}</td>
+                                            <!-- <td headers="row-3m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_3m"] }}</td>
+                                            <td headers="row-6m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_6m"] }}</td>
+                                            <td headers="row-1y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1y"] }}</td>
+                                            <td headers="row-2y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_2y"] }}</td> -->
+
+                                            <!-- <td headers="row-value-btc" class="text-right table-left-border pl-1 pr-0 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["ValueBTC"] }}</td> -->
+                                            <!-- <td headers="row-perc-btc" class="text-right pl-0 pr-1 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["Perc"] }}</td> -->
+                                            <td headers="row-price-btc" class="text-right table-left-border pl-1 pr-1 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["PriceBTC"] }}</td>
+                                            <td headers="row-1d-btc" class="text-right table-left-border color-sign pl-0 pr-1 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1d"] }}</td>
+                                            <!-- <td headers="row-7d-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_7d"] }}</td> -->
+                                            <td headers="row-1m-btc" class="text-right color-sign pl-0 pr-1 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1m"] }}</td>
+                                            <!-- <td headers="row-3m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_3m"] }}</td>
+                                            <td headers="row-6m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_6m"] }}</td>
+                                            <td headers="row-1y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1y"] }}</td>
+                                            <td headers="row-2y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_2y"] }}</td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for SM (SMALL)-->
+                            <div class="js-table d-none d-sm-block d-md-none">
+                                <table id="coins-table-sm" class="table table-hover table-borderless px-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-coin" class="py-2" scope="col"></th>
+                                            <th id="row-value" class="text-right py-2" data-curr="curr" scope="col">Valor</th>
+                                            <th id="row-perc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <th id="row-price" class="text-right py-2" data-curr="curr" scope="col">Cotiz.</th>
+                                            <th id="row-1d" class="text-right py-2" data-curr="curr" scope="col">Δ 1D</th>
+                                            <!-- <th id="row-7d" class="text-right py-2" data-curr="curr" scope="col">Δ 7D</th> -->
+                                            <th id="row-1m" class="text-right py-2" data-curr="curr" scope="col">Δ 1M</th>
+                                            <!-- <th id="row-3m" class="text-right py-2" data-curr="curr" scope="col">Δ 3M</th>
+                                            <th id="row-6m" class="text-right py-2" data-curr="curr" scope="col">Δ 6M</th>
+                                            <th id="row-1y" class="text-right py-2" data-curr="curr" scope="col">Δ 1Y</th>
+                                            <th id="row-2y" class="text-right py-2" data-curr="curr" scope="col">Δ 2Y</th> -->
+
+                                            <th id="row-value-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Valor</th>
+                                            <th id="row-perc-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <th id="row-price-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Cotiz.</th>
+                                            <th id="row-1d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1D</th>
+                                            <!-- <th id="row-7d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 7D</th> -->
+                                            <th id="row-1m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1M</th>
+                                            <!-- <th id="row-3m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 3M</th>
+                                            <th id="row-6m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 6M</th>
+                                            <th id="row-1y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1Y</th>
+                                            <th id="row-2y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 2Y</th> -->
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in coin_dashbord %}
+                                        <tr>
+                                            <td headers="row-coin" class="font-weight-bold pl-1 pr-0 py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-value" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Value"] }}</td>
+                                            <td headers="row-perc" class="text-right pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Price"] }}</td>
+                                            <td headers="row-1d" class="text-right table-left-border color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1d"] }}</td>
+                                            <!-- <td headers="row-7d" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_7d"] }}</td> -->
+                                            <td headers="row-1m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1m"] }}</td>
+                                            <!-- <td headers="row-3m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_3m"] }}</td>
+                                            <td headers="row-6m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_6m"] }}</td>
+                                            <td headers="row-1y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1y"] }}</td>
+                                            <td headers="row-2y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_2y"] }}</td> -->
+
+                                            <td headers="row-value-btc" class="text-right table-left-border pl-1 pr-0 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["ValueBTC"] }}</td>
+                                            <td headers="row-perc-btc" class="text-right pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price-btc" class="text-right table-left-border pl-1 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["PriceBTC"] }}</td>
+                                            <td headers="row-1d-btc" class="text-right table-left-border color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1d"] }}</td>
+                                            <!-- <td headers="row-7d-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_7d"] }}</td> -->
+                                            <td headers="row-1m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1m"] }}</td>
+                                            <!-- <td headers="row-3m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_3m"] }}</td>
+                                            <td headers="row-6m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_6m"] }}</td>
+                                            <td headers="row-1y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1y"] }}</td>
+                                            <td headers="row-2y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_2y"] }}</td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for MD (MEDIUM)-->
+                            <div class="js-table d-none d-md-block d-lg-none">
+                                <table id="coins-table-md" class="table table-hover table-borderless px-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-coin" class="py-2" scope="col"></th>
+                                            <th id="row-value" class="text-right py-2" data-curr="curr" scope="col">Valor</th>
+                                            <th id="row-perc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <th id="row-price" class="text-right py-2" data-curr="curr" scope="col">Cotiz.</th>
+                                            <th id="row-1d" class="text-right py-2" data-curr="curr" scope="col">Δ 1D</th>
+                                            <th id="row-7d" class="text-right py-2" data-curr="curr" scope="col">Δ 7D</th>
+                                            <th id="row-1m" class="text-right py-2" data-curr="curr" scope="col">Δ 1M</th>
+                                            <th id="row-3m" class="text-right py-2" data-curr="curr" scope="col">Δ 3M</th>
+                                            <!-- <th id="row-6m" class="text-right py-2" data-curr="curr" scope="col">Δ 6M</th>
+                                            <th id="row-1y" class="text-right py-2" data-curr="curr" scope="col">Δ 1Y</th>
+                                            <th id="row-2y" class="text-right py-2" data-curr="curr" scope="col">Δ 2Y</th> -->
+
+                                            <th id="row-value-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Valor</th>
+                                            <th id="row-perc-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <th id="row-price-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Cotiz.</th>
+                                            <th id="row-1d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1D</th>
+                                            <th id="row-7d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 7D</th>
+                                            <th id="row-1m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1M</th>
+                                            <th id="row-3m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 3M</th>
+                                            <!-- <th id="row-6m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 6M</th>
+                                            <th id="row-1y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1Y</th>
+                                            <th id="row-2y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 2Y</th> -->
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in coin_dashbord %}
+                                        <tr>
+                                            <td headers="row-coin" class="font-weight-bold pl-1 pr-0 py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-value" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Value"] }}</td>
+                                            <td headers="row-perc" class="text-right pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Price"] }}</td>
+                                            <td headers="row-1d" class="text-right table-left-border color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1d"] }}</td>
+                                            <td headers="row-7d" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_7d"] }}</td>
+                                            <td headers="row-1m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1m"] }}</td>
+                                            <td headers="row-3m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_3m"] }}</td>
+                                            <!-- <td headers="row-6m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_6m"] }}</td>
+                                            <td headers="row-1y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1y"] }}</td>
+                                            <td headers="row-2y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_2y"] }}</td> -->
+
+                                            <td headers="row-value-btc" class="text-right table-left-border pl-1 pr-0 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["ValueBTC"] }}</td>
+                                            <td headers="row-perc-btc" class="text-right pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price-btc" class="text-right table-left-border pl-1 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["PriceBTC"] }}</td>
+                                            <td headers="row-1d-btc" class="text-right table-left-border color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1d"] }}</td>
+                                            <td headers="row-7d-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_7d"] }}</td>
+                                            <td headers="row-1m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1m"] }}</td>
+                                            <td headers="row-3m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_3m"] }}</td>
+                                            <!-- <td headers="row-6m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_6m"] }}</td>
+                                            <td headers="row-1y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1y"] }}</td>
+                                            <td headers="row-2y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_2y"] }}</td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!--Data table for LG (LARGE) & XL (EXTRA-LARGE-->
+                            <div class="js-table d-none d-lg-block">
+                                <table id="coins-table-lg" class="table table-hover table-borderless px-1" cellspacing="0" width="100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th id="row-coin" class="py-2" scope="col"></th>
+                                            <th id="row-value" class="text-right py-2" data-curr="curr" scope="col">Valor</th>
+                                            <th id="row-perc" class="text-right py-2" data-curr="curr" scope="col">%</th>
+                                            <th id="row-price" class="text-right py-2" data-curr="curr" scope="col">Cotiz.</th>
+                                            <th id="row-1d" class="text-right py-2" data-curr="curr" scope="col">Δ 1D</th>
+                                            <th id="row-7d" class="text-right py-2" data-curr="curr" scope="col">Δ 7D</th>
+                                            <th id="row-1m" class="text-right py-2" data-curr="curr" scope="col">Δ 1M</th>
+                                            <th id="row-3m" class="text-right py-2" data-curr="curr" scope="col">Δ 3M</th>
+                                            <th id="row-6m" class="text-right py-2" data-curr="curr" scope="col">Δ 6M</th>
+                                            <th id="row-1y" class="text-right py-2" data-curr="curr" scope="col">Δ 1Y</th>
+                                            <th id="row-2y" class="text-right py-2" data-curr="curr" scope="col">Δ 2Y</th>
+
+                                            <th id="row-value-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Valor</th>
+                                            <th id="row-perc-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">%</th>
+                                            <th id="row-price-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Cotiz.</th>
+                                            <th id="row-1d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1D</th>
+                                            <th id="row-7d-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 7D</th>
+                                            <th id="row-1m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1M</th>
+                                            <th id="row-3m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 3M</th>
+                                            <th id="row-6m-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 6M</th>
+                                            <th id="row-1y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 1Y</th>
+                                            <th id="row-2y-btc" class="text-right py-2 hidden-col" data-curr="btc" scope="col">Δ 2Y</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in coin_dashbord %}
+                                        <tr>
+                                            <td headers="row-coin" class="font-weight-bold pl-1 pr-0 py-1" scope="col">{{ row }}</td>
+                                            <td headers="row-value" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Value"] }}</td>
+                                            <td headers="row-perc" class="text-right pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price" class="text-right table-left-border pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["Price"] }}</td>
+                                            <td headers="row-1d" class="text-right table-left-border color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1d"] }}</td>
+                                            <td headers="row-7d" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_7d"] }}</td>
+                                            <td headers="row-1m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1m"] }}</td>
+                                            <td headers="row-3m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_3m"] }}</td>
+                                            <td headers="row-6m" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_6m"] }}</td>
+                                            <td headers="row-1y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_1y"] }}</td>
+                                            <td headers="row-2y" class="text-right color-sign pl-0 pr-2 py-1" data-curr="curr" scope="col">{{ coin_dashbord[row]["curr_2y"] }}</td>
+
+                                            <td headers="row-value-btc" class="text-right table-left-border pl-1 pr-0 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["ValueBTC"] }}</td>
+                                            <td headers="row-perc-btc" class="text-right pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["Perc"] }}</td>
+                                            <td headers="row-price-btc" class="text-right table-left-border pl-1 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["PriceBTC"] }}</td>
+                                            <td headers="row-1d-btc" class="text-right table-left-border color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1d"] }}</td>
+                                            <td headers="row-7d-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_7d"] }}</td>
+                                            <td headers="row-1m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1m"] }}</td>
+                                            <td headers="row-3m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_3m"] }}</td>
+                                            <td headers="row-6m-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_6m"] }}</td>
+                                            <td headers="row-1y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_1y"] }}</td>
+                                            <td headers="row-2y-btc" class="text-right color-sign pl-0 pr-2 py-1 hidden-col" data-curr="btc" scope="col">{{ coin_dashbord[row]["btc_2y"] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock scripts %}

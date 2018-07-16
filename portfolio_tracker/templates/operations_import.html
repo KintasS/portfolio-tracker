@@ -1,0 +1,351 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css"/>
+<!-- Your custom styles (optional) -->
+<!-- <link href="{{ url_for('static', filename='css/operations.css') }}" rel="stylesheet"> -->
+{% endblock styles %}
+
+{% block content %}
+
+<div class="card z-depth-2">
+    <!-- <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6> -->
+    <div class="card-body p-2 mb-4">
+        <div class="container px-2 py-0">
+
+            <!-- Import form -->
+            <form method="POST" action="" enctype="multipart/form-data">
+
+                <!-- Form field and buttons-->
+
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <legend class="font-weight-bold border-bottom mb-0">{{ title }}</legend>
+                        {% if not cons_errors %}
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-xs-12 px-2 pt-4">
+                                <div class="form-group mb-0">
+                                    {{ form.file.label() }}
+                                    {{ form.file(class="form-control-file") }}
+                                    {% if form.file.errors %}
+                                        {% for error in form.file.errors %}
+                                            <span class="text-danger">{{ error }}</span></br>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </fieldset>
+
+                    {% if not cons_errors %}
+                    <div class="row d-flex justify-content-center align-items-start">
+                        <div class="col-xs-12 px-2">
+                            <button type="button" class="btn btn-indigo px-4" data-toggle="modal" data-target="#WarningModal">Cargar</button>
+                            <a type="button" class="btn btn-danger ml-3" href="{{ url_for('operations') }}">cancelar</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if not cons_errors and not file_errors %}
+                    <div class="row">
+                        <div class="col px-2 px-xl-4 pt-4">
+                            <h4 class="font-weight-bold pb-2">Instrucciones</h4>
+                            <h5 class="font-weight-bold">Formato general</h5>
+                            <ul>
+                                <li class="pt-1">El fichero debe tener 10 campos for operación (fila), siendo el separadar 'punto y coma' (;)</li>
+                                <li class="pt-1">La primera fila debe ser la cabecera, y contener exactamente:</li>
+                                <div class="text-center pb-1">Date;Exchange;Type;Buy Amount;Buy Coin;Sell Amount;Sell Coin;Fee Amount;Fee Coin;Comment</div>
+                                <li class="pt-1">Los campos que no se deban rellenar (detalle abajo) deben dejarse completamente vacíos</li>
+                                <li>Los 10 campos que componen cada operación son:</li>
+                            </ul>
+                                <div class="row d-flex justify-content-center px-2">
+                                    <div class="col-lg-11">
+                                        <table class="table table-hover px-1 my-2" cellspacing="0" width="100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Date / Fecha</td>
+                                                    <td class="py-2 align-middle" scope="col">Fecha de la operación, en formato 'YYYY-MM-DD'.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Exchange</td>
+                                                    <td class="py-2 align-middle" scope="col">Exchange o monedero en el que se realiza la operación.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Type / Tipo</td>
+                                                    <td class="py-2 align-middle" scope="col">Tipo de operación realizada. Se aceptan los siguientes tipos (detalle a continuación): 'Airdrop', 'Deposit', 'Expense', 'Fork', 'Income', 'Trade' y 'Withdrawal'.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Buy Amount / Cantidad comprada</td>
+                                                    <td class="py-2 align-middle" scope="col">Campo numérico con la cantidad de moneda que se incorpora al exchange. El separador decimal debe ser un punto (.)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Buy Coin / Moneda comprada</td>
+                                                    <td class="py-2 align-middle" scope="col">Moneda que se incorpora a la cartera en el exchange indicado. Debe ser un código de letras reconocido por CryptoCompare (típicamente de 3 letras). Si una vez introducida la moneda viese que la página no valora la moneda, revise en CryptoCompare su código.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Sell Amount / Cantidad vendida</td>
+                                                    <td class="py-2 align-middle" scope="col">Campo numérico con la cantidad de moneda que se incorpora al exchange. El separador decimal debe ser un punto (.)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Sell Coin / Moneda vendida</td>
+                                                    <td class="py-2 align-middle" scope="col">Moneda que se sustrae de la cartera para el exchange indicado (código alfanumérico, típicamente de 3 letras).</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Fee Amount / Comisiones pagadas</td>
+                                                    <td class="py-2 align-middle" scope="col">Campo numérico con la cantidad de moneda que se incorpora al exchange. El separador decimal debe ser un punto (.)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Fee Coin / Moneda de la comisión</td>
+                                                    <td class="py-2 align-middle" scope="col">Moneda en que se paga la comisión por la operación (código alfanumérico, típicamente de 3 letras).</td>
+                                                <tr>
+                                                    <td class="font-weight-bold py-2 align-middle" scope="col">Comment / Comentario</td>
+                                                    <td class="py-2 align-middle" scope="col">Cualquier información adicional que se quiere añadir a la operación registrada.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            <h5 class="font-weight-bold mt-3">Tipos de operaciones</h5>
+                            <table class="table table-hover px-1 mt-1" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-1">
+                                    <tr class="text-white">
+                                        <th class="py-1 align-middle" scope="col">Tipo</th>
+                                        <th class="py-1 align-middle" scope="col">Descripción</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Date</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Exch</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Type</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Buy Amt.</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Buy Coin</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Sell Amt.</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Sell Coin</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Fee Amt.</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Fee Coin</th>
+                                        <th class="px-0 mr-0 py-1 text-center align-middle" style="font-size:0.7rem" scope="col">Com.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Airdrop</td>
+                                        <td class="py-1 align-middle" scope="col">Ingresos de moneda en cuenta sin contraprestación.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Fork</td>
+                                        <td class="py-1 align-middle" scope="col">Bifurcación de una moneda en una nueva cadena.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Income / Ingreso</td>
+                                        <td class="py-1 align-middle" scope="col">Ingreso (intereses) generados por alguna moneda. Ejemplos: GAS en NEO, o KMD en Komodo.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Trade</td>
+                                        <td class="py-1 align-middle" scope="col">Operación de intercambio de una moneda por otra. El campo 'BUY' debe contener la cantidad comprada y 'SELL' la vendida, ya habiendo restado la comisión de la operación. El campo 'FEE' se debe rellenar también obligatoriamente para registrar las comisiones
+                                            de la transacción.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Expense / Gasto</td>
+                                        <td class="py-1 align-middle" scope="col">Concepto abierto para gastos varios que puedan surgir como consecuencia de la operativa en criptomonedas.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Withdraw / Retiro</td>
+                                        <td class="py-1 align-middle" scope="col">Retiro de una moneda de un Exchange/Wallet. La cantidad indicada en 'SELL' debe ser el total retirado. Una operación de este tipo siempre debe venir continuada de una operación de tipo 'Deposit', con la cantidad que se ingresa en el Exchange/Wallet
+                                            destino. Siempre debe cumplirse: SELL - FEE (Withdraw) = 'BUY' (Deposit).</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold py-1 align-middle" scope="col">Deposit (Depósito)</td>
+                                        <td class="py-1 align-middle" scope="col">Ingreso de una cantidad en un Exchange/Wallet. Salvo que sea un ingreso de moneda fiat desde un banco, generalmente esta operación representará la parte destino de una transferencia, debiendo venir precedida de una operación de tipo 'Withdrawal/Retiro'.</td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-check-square fa-lg green-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-minus-square fa-lg red-text" aria-hidden="true"></i></td>
+                                        <td class="align-middle py-2" scope="col"><i class="fa fa-circle fa-lg orange-text" aria-hidden="true"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-end px-2">
+                                <i class="fa fa-check-square fa-lg green-text mx-2" aria-hidden="true"></i><span>Obligatorio</span>
+                                <i class="fa fa-minus-square fa-lg red-text mx-2" aria-hidden="true"></i><span>Vacío</span>
+                                <i class="fa fa-circle fa-lg orange-text mx-2" aria-hidden="true"></i><span>Opcional</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endif %}
+
+
+                <!-- File errors table -->
+                {% if file_errors %}
+                    <div class="row">
+                        <div class="col px-2 px-xl-4 pt-4">
+                            <h5 class="font-weight-bold">Errores de formato encontrados:</h5>
+                            <table id="import-errors" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-1">
+                                    <tr class="text-white">
+                                        <th class="py-2" scope="col">Línea</th>
+                                        <th class="py-2" data-curr="curr" scope="col">Error</th>
+                                        <th class="py-2 d-none d-lg-block" data-curr="curr" scope="col">Línea completa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for error in file_errors %}
+                                    <tr>
+                                        <td class="font-weight-bold py-1" scope="col">{{ error.line_num }}</td>
+                                        <td class="py-1" scope="col">{{ error.line_error }}</td>
+                                        <td class="py-1 d-none d-lg-block" scope="col">{{ error.line_content }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Consistency warning table -->
+                {% if cons_errors %}
+                    <div class="row">
+                        <div class="col px-2 pt-4">
+                            <h5 class="font-weight-bold">Inconsistencias encontradas en el total de operaciones:</h5>
+                            <table id="consistency-warnings" class="table table-hover table-borderless px-1 mt-1" cellspacing="0" width="100%">
+                                <thead class="indigo lighten-1">
+                                    <tr class="text-white">
+                                        <th class="py-2" data-curr="curr" scope="col">Alerta</th>
+                                        <th class="py-2" data-curr="curr" scope="col">Operación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for warning in cons_errors %}
+                                    <tr>
+                                        <td class="font-weight-bold py-1" scope="col">{{ warning.legend }}</td>
+                                        <td class="py-1" scope="col">{{ warning.operation }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-start">
+                        <div class="col-xs-12 px-2">
+                            <a type="button" class="btn btn-indigo ml-3" href="{{ url_for('confirm_import_operations') }}">Lo veo Ok. ¡Cargar!</a>
+                            <a type="button" class="btn btn-danger ml-3" href="{{ url_for('cancel_import_operations') }}">cancelar</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Central Modal Medium Warning -->
+                <div class="modal fade" id="WarningModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-notify modal-warning" role="document">
+                        <div class="modal-content">
+                            <!--Header-->
+                            <div class="modal-header">
+                                <p class="heading lead">Paciencia...</p>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" class="white-text">&times;</span>
+                                </button>
+                            </div>
+                            <!--Body-->
+                            <div class="modal-body">
+                                <div class="text-center">
+                                    <i class="fa fa-gears fa-4x mb-3 animated rotateIn"></i>
+                                    <p>El proceso que se ejecutará a continuación verifica que el formato del contenido del fichero es correcto, y en caso afirmativo hace un análisis detallado de la consistencia de las operaciones. Este segundo paso puede tardar hasta un minuto dependiendo del número de operaciones y de la antiguedad de las mismas.</p>
+                                    <p class="font-weight-bold">Por favor, tenga paciencia y no actualice la página.</p>
+                                    <p class="font-italic font-weight-light">El botón de confirmación desaparecerá para evitar tentaciones...</p>
+                                </div>
+                            </div>
+                            <!--Footer-->
+                            <div class="modal-footer justify-content-center">
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-warning") }}
+                                </div>
+                                <!-- <a type="button" class="btn btn-warning">Vamos allá!<i class="fa fa-diamond ml-1"></i></a> -->
+                            </div>
+                        </div>
+                        <!--/.Content-->
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/import_operations.js') }}"></script>
+
+{% endblock scripts %}

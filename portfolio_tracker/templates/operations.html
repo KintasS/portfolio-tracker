@@ -1,0 +1,233 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+<!-- Within <head></head> tags -->
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css"/>
+<!-- Your custom styles (optional) -->
+<link href="{{ url_for('static', filename='css/operations.css') }}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+
+<div class="card z-depth-2">
+    <h6 class="card-header text-center indigo darken-4 white-text py-2">{{ title }}</h6>
+    <div class="card-body p-1 p-sm-2">
+        <div class="container px-1 px-sm-2 py-0">
+
+            <!-- Trade table -->
+            <div class="card">
+                <div class="card-body px-2 py-2">
+                    <div class="container p-0">
+
+                        <!-- Buttons for big screens -->
+                        <div class="row d-none d-lg-block">
+                            <div class="col d-flex justify-content-end">
+                                <a href="{{ url_for('new_operation') }}" type="button" class="btn btn-indigo px-4"><i class="fa fa-btc mr-3" aria-hidden="true"></i>Nuevo</a>
+                                <a href="{{ url_for('import_operations') }}" type="button" class="btn btn-indigo px-4 mr-auto"><i class="fa fa-upload mr-3" aria-hidden="true"></i>Carga CSV</a>
+                                <button type="button" class="btn btn-blue-grey px-4" data-toggle="modal" data-target="#ConsistencyModal"><i class="fa fa-eye fa-lg mr-3" aria-hidden="true"></i>Comprobar consistencia</button>
+                                <!-- <button type="button" class="btn btn-blue-grey px-4"><i class="fa fa-download mr-3" aria-hidden="true"></i>Exportar</button> -->
+                                <button type="button" class="btn btn-danger px-4" data-toggle="modal" data-target="#deleteAllModal"><i class="fa fa-trash mr-3" aria-hidden="true"></i>Eliminar todo</button>
+                            </div>
+                        </div>
+                        <!-- Buttons for small screens -->
+                        <div class="row d-lg-none">
+                            <div class="col d-flex justify-content-end">
+                                <a href="{{ url_for('new_operation') }}" type="button" class="btn btn-indigo px-4 py-2 mr-auto" style="font-size:0.7rem">Nuevo</a>
+                                <button type="button" class="btn btn-blue-grey px-4 py-2 align-middle d-none d-sm-block" data-toggle="modal" data-target="#ConsistencyModal" style="font-size:0.7rem">Comprobar consistencia</button>
+                                <!-- <button type="button" class="btn btn-blue-grey px-4"><i class="fa fa-download mr-3" aria-hidden="true"></i>Exportar</button> -->
+                                <button type="button" class="btn btn-danger px-4 py-2 align-middle" data-toggle="modal" data-target="#deleteAllModal" style="font-size:0.7rem">Eliminar todo</button>
+                            </div>
+                        </div>
+
+                        <!-- Table with operations -->
+                        <div class="row pt-2">
+                            <div class="col-sm-12">
+                                <table id="operations-table" class="table table-sm table-hover table-borderless display nowrap" cellspacing="0" style="width:100%">
+                                    <thead class="indigo lighten-1">
+                                        <tr class="text-white">
+                                            <th class="py-2" scope="col"></th>
+                                            <th class="th-sm py-2" data-priority="0" scope="col"></th>
+                                            <th class="py-2" data-priority="1" scope="col">Exchange</th>
+                                            <th class="py-2" data-priority="1" scope="col">Tipo</th>
+                                            <th class="text-right py-2" data-priority="2" scope="col">Compra</th>
+                                            <th class="text-right py-2" data-priority="2" scope="col"></th>
+                                            <th class="text-right py-2" data-priority="2" scope="col">Venta</th>
+                                            <th class="text-right py-2" data-priority="2" scope="col"></th>
+                                            <th class="text-right py-2" data-priority="3" scope="col">Fee</th>
+                                            <th class="text-right py-2" data-priority="3" scope="col"></th>
+                                            <th class="py-2" data-priority="4" scope="col">Comment</th>
+                                            <th class="py-2" data-priority="0" scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in ops %}
+                                        <tr data-op-id="{{ row.id }}">
+                                            <td class="py-1" scope="col"></td>
+                                            <td class="font-weight-bold p-1" scope="col">{{ row.date.strftime('%Y-%m-%d') }}</td>
+                                            <td class="font-weight-bold p-1" scope="col">{{ row.exchange }}</td>
+                                            <td class="font-weight-bold p-1" scope="col">{{ row.type }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.buy_amount_str() }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.buy_coin_str() }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.sell_amount_str() }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.sell_coin_str() }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.fee_amount_str() }}</td>
+                                            <td class="text-right p-1" scope="col">{{ row.fee_coin_str() }}</td>
+                                            <td class="p-1" scope="col">{{ row.comment_str() }}</td>
+                                            <td class="text-right py-0" scope="col">
+                                                <a href="{{ url_for('edit_operation', op_id=row.id) }}"><i class="fa fa-edit fa-lg indigo-text pr-1 pt-2" aria-hidden="true"></i></a>
+                                                <a data-toggle="modal" data-target="#deleteEntryModal" data-modal-link='deleteEntryModal' data-operation="{{ row.print() }}"><i class="fa fa-trash-o fa-lg red-text pt-2" aria-hidden="true"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal: DELETE ALL-->
+<div class="modal fade" id="deleteAllModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-danger" role="document">
+        <!--Content-->
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header">
+                <p class="heading lead">Eliminar todas las operaciones</p>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white-text">&times;</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+                <div class="text-center font-weight-bold">
+                    <i class="fa fa-trash fa-4x mb-3 animated rotateIn"></i>
+                    <p>¿Está seguro de que quiere eliminar todas las operaciones almacenadas?</p>
+                    <p>Esta operación no podrá deshacerse.</p>
+                </div>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer justify-content-center">
+                <form action="{{ url_for('delete_all_operations') }}" method="POST">
+                    <input class="btn btn-danger" type="submit" value="Eliminar">
+                </form>
+                <a type="button" class="btn btn-outline-danger waves-effect" data-dismiss="modal">cancelar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: DELETE ENTRY-->
+<div class="modal fade" id="deleteEntryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-warning" role="document">
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header">
+                <p class="heading lead">Eliminar registro</p>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white-text">&times;</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fa fa-trash fa-4x mb-3 animated rotateIn"></i>
+                    <p class="font-weight-bold">¿Está seguro de que quiere eliminar el siguiente registro?</p>
+                    <p id="deleted-operation"></p>
+                    <p class="font-weight-bold">Esta operación no podrá deshacerse.</p>
+                </div>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer justify-content-center">
+                <form action="{{ url_for('delete_operation', op_id=99999999) }}" method="POST">
+                    <input class="btn btn-warning" type="submit" value="Eliminar">
+                </form>
+                <a type="button" class="btn btn-outline-warning waves-effect" data-dismiss="modal">cancelar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: IMPORT OPERATIONS-->
+<div class="modal fade" id="ImportOperationsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-warning" role="document">
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header text-center">
+                <h4 class="modal-title white-text w-100 font-weight-bold py-2">Importar operaciones desde fichero</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white-text">&times;</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="form3" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="form3">Your name</label>
+                </div>
+
+                <div class="md-form">
+                    <i class="fa fa-envelope prefix grey-text"></i>
+                    <input type="email" id="form2" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="form2">Your email</label>
+                </div>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer justify-content-center">
+                <a type="button" class="btn btn-outline-warning waves-effect">Send <i class="fa fa-paper-plane-o ml-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal: CHECK CONSISTENCY-->
+<div class="modal fade" id="ConsistencyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-warning" role="document">
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header">
+                <p class="heading lead">Paciencia...</p>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white-text">&times;</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fa fa-gears fa-4x mb-3 animated rotateIn"></i>
+                    <p>Para comprobar la consistencia de las operaciones es necesario recalcular todo el balance para todas las fechas del histórico. Este proceso puede tardar hasta un minuto dependiendo del número de operaciones y de la antiguedad de las mismas.</p>
+                    <p class="font-weight-bold">Por favor, tenga paciencia y no actualice la página.</p>
+                    <p class="font-italic font-weight-light">El botón de confirmación desaparecerá para evitar tentaciones...</p>
+                </div>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer justify-content-center">
+                <a href="{{ url_for('check_consistency') }}" type="button" class="btn blue-grey px-4 mr-3">Ok, ¡A por ello!</a>
+            </div>
+        </div>
+        <!--/.Content-->
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- Within scripts, below mdb.min.js script -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/operations.js') }}"></script>
+
+{% endblock scripts %}
